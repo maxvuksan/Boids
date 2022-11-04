@@ -14,7 +14,7 @@ Game::Game() :
 	FLOCK_COUNT(2),
 	SHOW_TRAILS(true),
 	rect_count(10),
-	quad_tree_delay(0.2)
+	quad_tree_delay(0.25)
 {
 	WINDOW = new sf::RenderWindow(sf::VideoMode(W_WIDTH, W_HEIGHT), "Boid Simulation");
 	ImGui::SFML::Init(*WINDOW);
