@@ -14,7 +14,8 @@ Game::Game() :
 	FLOCK_COUNT(2),
 	SHOW_TRAILS(true),
 	rect_count(10),
-	quad_tree_delay(0.25)
+	quad_tree_delay(0.25),
+	SIMULATION_SPEED(1)
 {
 	WINDOW = new sf::RenderWindow(sf::VideoMode(W_WIDTH, W_HEIGHT), "Boid Simulation");
 	ImGui::SFML::Init(*WINDOW);
@@ -23,8 +24,12 @@ Game::Game() :
 	DISPLAY->create(D_WIDTH, D_HEIGHT);
 	DISPLAY->setSmooth(true);
 
-	if(!SHADER.loadFromFile("shader.frag", sf::Shader::Fragment)) {
-		throw "error loading shader";
+	DISPLAY_OVERLAY = new sf::RenderTexture;
+	DISPLAY_OVERLAY->create(D_WIDTH, D_HEIGHT);
+	DISPLAY_OVERLAY->setSmooth(true);
+	
+	if (!WOBBLE.loadFromFile("wobble_shader.frag", sf::Shader::Fragment)) {
+		throw "failed loading";
 	}
 
 	//defining flock colours
@@ -70,6 +75,7 @@ void Game::reset_boids() {
 		delete ENTITIES[i];
 	}
 	ENTITIES.clear();
+	assigned_FOCUS_BOID = false;
 	QUAD_TREE.purge_boids();
 	for (int i = 0; i < BOID_COUNT; i++) {
 		add_entity(new Boid);
@@ -82,10 +88,11 @@ void Game::run() {
 	while (WINDOW->isOpen()) {
 
 		DISPLAY->clear(BACKGROUND_COLOUR);
+		DISPLAY_OVERLAY->clear();
 
 		sf::Time td = CLOCK.restart();
 		ImGui::SFML::Update(*WINDOW, td);
-		DELTA_TIME = td.asSeconds();
+		DELTA_TIME = td.asSeconds() * SIMULATION_SPEED;
 		TIME += DELTA_TIME;
 
 		this->update();
@@ -93,8 +100,6 @@ void Game::run() {
 		this->render_ui();
 
 		DISPLAY->display();
-		SHADER.setUniform("u_time", TIME);
-		SHADER.setUniform("u_texture", DISPLAY->getTexture());
 
 		sf::Sprite display_sprite(DISPLAY->getTexture());
 		//by drawing it with an offset it prevents the shader from screwing up the edges
@@ -102,15 +107,19 @@ void Game::run() {
 		display_sprite.setPosition(-shader_edge_buffer / 2, -shader_edge_buffer / 2);
 		display_sprite.setScale(W_WIDTH / ((float)D_WIDTH - shader_edge_buffer), W_HEIGHT / ((float)D_HEIGHT - shader_edge_buffer));
 		
-		WINDOW->draw(display_sprite, &SHADER);
+		WOBBLE.setUniform("u_time", TIME);
+		WOBBLE.setUniform("u_texture", DISPLAY->getTexture());
+		WINDOW->draw(display_sprite, &WOBBLE);
 
-		DISPLAY->clear();
 		if (SHOW_QUAD_TREE) {
-			QUAD_TREE.draw(*DISPLAY);
+			QUAD_TREE.draw(*DISPLAY_OVERLAY);
 		}
-		DISPLAY->display();
-		display_sprite.setTexture(DISPLAY->getTexture());
-		WINDOW->draw(display_sprite, sf::BlendAdd);
+		DISPLAY_OVERLAY->display();
+
+		sf::Sprite display_overlay_sprite(DISPLAY_OVERLAY->getTexture());
+		display_overlay_sprite.setScale(W_WIDTH / (float)D_WIDTH, W_HEIGHT / (float)D_HEIGHT);
+
+		WINDOW->draw(display_overlay_sprite, sf::BlendAdd);
 
 		ImGui::SFML::Render(*WINDOW);
 
@@ -160,6 +169,7 @@ void Game::update() {
 	for (int i = 0; i < ENTITIES.size(); i++) {
 		ENTITIES[i]->update();
 		ENTITIES[i]->update(*DISPLAY);
+		ENTITIES[i]->update_overlay(*DISPLAY_OVERLAY);
 	}
 }
 
@@ -170,10 +180,11 @@ void Game::render_ui() {
 	ImGui::Checkbox("SHOW TRAILS", &SHOW_TRAILS);
 	ImGui::Checkbox("SHOW QUAD-TREE", &SHOW_QUAD_TREE);
 	ImGui::Checkbox("SHOW RADIUS", &SHOW_RADIUS);
-	
+	ImGui::SliderFloat("SPEED", &SIMULATION_SPEED, 1, 4);
+
 	ImGui::Separator();
 
-	ImGui::SliderInt("COUNT", &BOID_COUNT, 1, 1000);
+	ImGui::SliderInt("COUNT", &BOID_COUNT, 1, 200);
 	
 	if (ImGui::Button("-")) {
 		if (FLOCK_COUNT > 1) {
@@ -227,6 +238,8 @@ sf::Vector2i Game::get_D_SIZE() {
 
 Game::~Game() {
 	delete WINDOW;
+	delete DISPLAY;
+	delete DISPLAY_OVERLAY;
 	for (int i = 0; i < ENTITIES.size(); i++) {
 		delete ENTITIES[i];
 	}

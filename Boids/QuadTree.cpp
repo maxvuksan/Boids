@@ -1,9 +1,10 @@
 #include "QuadTree.h"
 #include "CALC.h"
+#include "Boid.h"
 #include <iostream>
 
 short QuadTree::capacity = 1;
-short QuadTree::division_limit = 4;
+short QuadTree::division_limit = 3;
 
 QuadTree::QuadTree(sf::IntRect rect, short division_level){
 	
@@ -30,6 +31,7 @@ void QuadTree::add_entity(Entity* entity) {
 			for (int i = 0; i < children.size(); i++) {
 				children[i].add_entity(entity);
 			}
+			caught_entities.clear();
 		}
 		else {
 			caught_entities.push_back(entity);
@@ -91,25 +93,24 @@ float QuadTree::bottom() {
 	return rect.top + rect.height;
 }
 
-std::vector<Entity*> QuadTree::get_ENTITIES_in_range(sf::Vector2f position, float r) {
+std::vector<Entity*> QuadTree::get_ENTITIES_in_range(sf::Vector2f position, float r, bool is_focus_boid) {
 
 	std::vector<Entity*> boids_in_range;
 
+	for (int i = 0; i < children.size(); i++) {
+		auto children_boids = children[i].get_ENTITIES_in_range(position, r, is_focus_boid);
+		boids_in_range.insert(boids_in_range.end(), children_boids.begin(), children_boids.end());
+	}
+
 	if (caught_entities.size() > 0) {
 		//look for boids in this cell
-
-
 		if (position.x + r > left() && position.x - r < right()) {
 			if (position.y + r > top() && position.y - r < bottom()) {
 				
 				boids_in_range.insert(boids_in_range.end(), caught_entities.begin(), caught_entities.end());
-				drawn_rect.setOutlineColor(sf::Color(150, 255, 150));
 			}
 		}
-	}
 
-	for (int i = 0; i < children.size(); i++) {
-		children[i].get_ENTITIES_in_range(position, r);
 	}
 
 	return boids_in_range;

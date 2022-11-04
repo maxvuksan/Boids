@@ -26,13 +26,15 @@ class Game {
 
 		sf::RenderWindow* WINDOW;
 		sf::RenderTexture* DISPLAY;
+		sf::RenderTexture* DISPLAY_OVERLAY;
 
 		std::vector<sf::Color> FLOCK_COLOURS;
 		int MAX_FLOCK_COUNT;
 
 		sf::Clock CLOCK;
 		sf::Color BACKGROUND_COLOUR;
-		sf::Shader SHADER;
+
+		sf::Shader WOBBLE;
 
 		sf::RectangleShape background_rect;
 		int rect_count;
@@ -41,10 +43,12 @@ class Game {
 		float quad_tree_delay_tracked;
 
 		std::vector<Entity*> ENTITIES;
+		float SIMULATION_SPEED;
 
 	public:
 		QuadTree QUAD_TREE;
 
+		bool assigned_FOCUS_BOID;
 		int FLOCK_COUNT;
 		int BOID_COUNT;
 

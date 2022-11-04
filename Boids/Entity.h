@@ -22,8 +22,11 @@ class Entity {
 		void link_game(Game*);
 
 		virtual void start(){}
+
 		virtual void update(){}
 		virtual void update(sf::RenderTexture&){}
+		virtual void update_overlay(sf::RenderTexture&){}
+
 		virtual void catch_event(sf::Event){}
 
 		virtual ~Entity(){}

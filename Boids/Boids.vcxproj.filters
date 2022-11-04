@@ -103,8 +103,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader.frag">
-      <Filter>Source Files</Filter>
-    </None>
+    <None Include="wobble_shader.frag" />
   </ItemGroup>
 </Project>
