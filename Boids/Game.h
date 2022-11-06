@@ -8,7 +8,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
-#include <iomanip>
+#include <time.h>
 #include "CALC.h"
 
 #include "Entity.h"
@@ -26,7 +26,6 @@ class Game {
 
 		sf::RenderWindow* WINDOW;
 		sf::RenderTexture* DISPLAY;
-		sf::RenderTexture* DISPLAY_OVERLAY;
 
 		std::vector<sf::Color> FLOCK_COLOURS;
 		int MAX_FLOCK_COUNT;
@@ -46,13 +45,9 @@ class Game {
 		float SIMULATION_SPEED;
 
 	public:
-		QuadTree QUAD_TREE;
-
-		bool assigned_FOCUS_BOID;
 		int FLOCK_COUNT;
 		int BOID_COUNT;
 
-		bool SHOW_QUAD_TREE;
 		bool SHOW_RADIUS;
 		bool SHOW_TRAILS;
 

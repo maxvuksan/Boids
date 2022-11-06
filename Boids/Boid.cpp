@@ -4,8 +4,6 @@
 int Boid::edge_buffer = 50;
 float Boid::edge_strength = 0.05f;
 
-int Boid::required_nearby_boids = 5; //for the quad-tree detection
-
 int Boid::view_angle_lower_bound = 135;
 int Boid::view_angle_upper_bound = 225;
 
@@ -20,23 +18,13 @@ float Boid::cohesion_radius = 100;
 float Boid::target_speed = 50;
 int Boid::speed_variance = 5;
 
+sf::CircleShape Boid::cohesion_shape;
+
 Boid::Boid() :
 	trail(this) {}
 
 void Boid::start() {
 
-	if (!game->assigned_FOCUS_BOID) {
-		focus_boid = true;
-		game->assigned_FOCUS_BOID = true;
-
-		quad_tree_overlap_graphic.setOutlineColor(sf::Color(255,150,150));
-		quad_tree_overlap_graphic.setOutlineThickness(1);
-		quad_tree_overlap_graphic.setFillColor(sf::Color::Transparent);
-
-		quad_tree_overlap_graphic.setSize(sf::Vector2f(cohesion_radius, cohesion_radius));
-		quad_tree_overlap_graphic.setOrigin(sf::Vector2f(cohesion_radius, cohesion_radius) / (float)2);
-	}
-	
 	speed = rand() % (speed_variance) + target_speed - speed_variance;
 
 	flock_index = rand() % game->FLOCK_COUNT;
@@ -64,14 +52,6 @@ void Boid::start() {
 
 int Boid::get_flock_index() {
 	return flock_index;
-}
-
-void Boid::update_overlay(sf::RenderTexture& surface) {
-
-	if (focus_boid && game->SHOW_QUAD_TREE) {
-		quad_tree_overlap_graphic.setPosition(position);
-		surface.draw(quad_tree_overlap_graphic);
-	}
 }
 
 void Boid::update(sf::RenderTexture& surface) {
@@ -108,7 +88,7 @@ void Boid::behaviour() {
 	std::vector<Boid*> local_boids;
 	std::vector<Boid*> seperation_boids;
 
-	auto quad_entities = game->QUAD_TREE.get_ENTITIES_in_range(position, cohesion_radius, focus_boid);
+	auto quad_entities = game->get_ENTITIES();//game->QUAD_TREE.get_ENTITIES_in_range(position, cohesion_radius);
 
 
 	for (int i = 0; i < quad_entities.size(); i++) {
@@ -138,7 +118,6 @@ void Boid::behaviour() {
 
 
 	int in_flock_count = 0; //boids nearby ONLY if in the same flock
-	nearby_boids = local_boids.size(); //boids nearby
 
 	sf::Vector2f alignment(0, 0);
 	sf::Vector2f average_position(0, 0);

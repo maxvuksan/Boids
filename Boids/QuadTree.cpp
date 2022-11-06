@@ -93,12 +93,12 @@ float QuadTree::bottom() {
 	return rect.top + rect.height;
 }
 
-std::vector<Entity*> QuadTree::get_ENTITIES_in_range(sf::Vector2f position, float r, bool is_focus_boid) {
+std::vector<Entity*> QuadTree::get_ENTITIES_in_range(sf::Vector2f position, float r) {
 
 	std::vector<Entity*> boids_in_range;
 
 	for (int i = 0; i < children.size(); i++) {
-		auto children_boids = children[i].get_ENTITIES_in_range(position, r, is_focus_boid);
+		auto children_boids = children[i].get_ENTITIES_in_range(position, r);
 		boids_in_range.insert(boids_in_range.end(), children_boids.begin(), children_boids.end());
 	}
 

@@ -33,7 +33,7 @@ class QuadTree {
 		void draw(sf::RenderTexture&);
 
 		std::vector<Entity*> get_ENTITIES();
-		std::vector<Entity*> get_ENTITIES_in_range(sf::Vector2f position, float range, bool is_focus_boid=false);
+		std::vector<Entity*> get_ENTITIES_in_range(sf::Vector2f position, float range);
 
 		float left();
 		float right();
