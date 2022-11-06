@@ -29,11 +29,12 @@ void Trail::update(sf::RenderTexture& surface) {
 		if (particles[i].lifetime <= 0) {
 			particles.erase(particles.begin() + i);
 		}
+		else {
+			shape.setFillColor(sf::Color(colour.r, colour.g, colour.b, particles[i].lifetime / lifetime * 255 * opacity));
+			shape.setPosition(particles[i].position);
 
-		shape.setFillColor(sf::Color(colour.r, colour.g, colour.b, particles[i].lifetime / lifetime * 255 * opacity));
-		shape.setPosition(particles[i].position);
-
-		surface.draw(shape);
+			surface.draw(shape);
+		}
 	}
 
 	delay_tracked++;
