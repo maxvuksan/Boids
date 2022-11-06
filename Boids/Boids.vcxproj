@@ -158,7 +158,6 @@
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="QuadTree.cpp" />
     <ClCompile Include="Trail.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -175,7 +174,6 @@
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
-    <ClInclude Include="QuadTree.h" />
     <ClInclude Include="Trail.h" />
   </ItemGroup>
   <ItemGroup>

@@ -12,7 +12,6 @@
 #include "CALC.h"
 
 #include "Entity.h"
-#include "QuadTree.h"
 
 class Game {
 
