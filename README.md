@@ -1,2 +1,2 @@
-# Boids (Flocking) Simulation
-written in C++ using the SFML graphics libary
+# Boids Simulation
+A simple Flocking Simulation aiming to mimic the behaviour of synchronised movement we'd find with fish or birds. Written in C++ with the SFML graphics library and Dear ImGui for UI Rendering.
